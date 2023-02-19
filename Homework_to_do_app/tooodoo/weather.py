@@ -26,7 +26,7 @@ class WeatherManager:
         return res.get("timelines")
 
     def get_daily_data(self):
-        timelines = self.get_timelines()
+        timelines = self.get_timelines()          
         if timelines:
             return timelines.get("daily")
 
