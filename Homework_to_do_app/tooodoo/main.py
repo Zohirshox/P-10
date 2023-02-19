@@ -11,6 +11,8 @@ from chat import Chat
 from key.utils import write_row_to_csv, get_fullname
 from key.save_info import Save
 
+
+
 env = Env()
 env.read_env()
 BOT_TOKEN = env("BOT_TOKEN")
@@ -25,7 +27,7 @@ def welcome_message(message):
     chat_id = message.chat.id
     user = message.from_user
     fullname = get_fullname(user.first_name, user.last_name)
-    bot.send_message(chat_id, f"Здраствуйте, {fullname} отправьте команду /register для регистрации")
+    bot.send_message(chat_id, f"Salom, {fullname}  registratsiya qilish uchun /register commandini yuboring")
 
 
 @bot.callback_query_handler(lambda call: call.data.startswith("_language_"))
@@ -50,13 +52,13 @@ def set_language_query_handler(call):
 
 @bot.message_handler(commands=["register"])
 def register_student_handler(message):
-    bot.send_message(message.chat.id, "Введите Имя:")
+    bot.send_message(message.chat.id, "Ism kiriting:")
     bot.set_state(message.from_user.id, StudentRegistration.first_name, message.chat.id)
 
 
 @bot.message_handler(state=StudentRegistration.first_name)
 def first_name_get(message):
-    bot.send_message(message.chat.id, 'Введите Фамилию:')
+    bot.send_message(message.chat.id, 'Familiya kiriting:')
     bot.set_state(message.from_user.id, StudentRegistration.last_name, message.chat.id)
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['first_name'] = message.text
@@ -64,7 +66,7 @@ def first_name_get(message):
 
 @bot.message_handler(state=StudentRegistration.last_name)
 def last_name_get(message):
-    bot.send_message(message.chat.id, 'Отправьте телефон номер:', reply_markup=phone)
+    bot.send_message(message.chat.id, 'Telefon raqamingizni yuboring:', reply_markup=phone)
     bot.set_state(message.from_user.id, StudentRegistration.phone, message.chat.id)
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['last_name'] = message.text
@@ -72,7 +74,7 @@ def last_name_get(message):
 
 @bot.message_handler(state=StudentRegistration.phone, content_types=["contact"])
 def phone_get(message):
-    bot.send_message(message.chat.id, 'Введите возраст:', reply_markup=ReplyKeyboardRemove())
+    bot.send_message(message.chat.id, 'Yoshingizni kiriting:', reply_markup=ReplyKeyboardRemove())
     bot.set_state(message.from_user.id, StudentRegistration.age, message.chat.id)
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['phone'] = message.contact.phone_number
@@ -91,7 +93,7 @@ def age_get(message):
 def language_get(call):
     message = call.message
     lang_code = call.data.split("_")[2]
-    bot.send_message(message.chat.id, 'Введите курс:')
+    bot.send_message(message.chat.id, 'Tilni tanlang:')
     bot.set_state(message.from_user.id, StudentRegistration.course, message.chat.id)
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['language'] = lang_code
@@ -102,16 +104,16 @@ def language_get(call):
 def get_task_handler(message):
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['course'] = message.text
-        messagess = f"Была получена следующая информация:\n"
-        messagess += f"Имя -->: {data.get('first_name')}\n"
-        messagess += f"Фамилия -->: {data.get('last_name')}\n"
-        messagess += f"Телефон -->: {data.get('phone')}\n"
-        messagess += f"Возраст -->: {data.get('age')}\n"
-        messagess += f"Язык -->: {data.get('language')}\n"
-        messagess += f"Курс -->: {data.get('course')}\n"
-        messagess += "Созранить эти данные ?\n"
-        messagess += "ДА -> \n"
-        messagess += "НЕТ -> "
+        messagess = f"Keyingi malumot qabul qilindi:\n"
+        messagess += f"Ism -->: {data.get('first_name')}\n"
+        messagess += f"Familiya -->: {data.get('last_name')}\n"
+        messagess += f"Telefon -->: {data.get('phone')}\n"
+        messagess += f"Yosh -->: {data.get('age')}\n"
+        messagess += f"Til -->: {data.get('language')}\n"
+        messagess += f"Kurs -->: {data.get('course')}\n"
+        messagess += "Malumotlarni saqlab qolaymi ?\n"
+        messagess += "Ha -> \n"
+        messagess += "Yo'q -> "
         bot.send_message(message.chat.id, messagess, reply_markup=csv_file('save'))
 
 

@@ -1,4 +1,4 @@
-from ezzz.weather import WeatherManager
+from tooodoo.weather import WeatherManager
 import csv
 import os
 
